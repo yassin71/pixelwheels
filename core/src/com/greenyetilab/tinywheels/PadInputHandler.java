@@ -11,9 +11,9 @@ import com.greenyetilab.utils.anchor.AnchorGroup;
 import com.greenyetilab.utils.log.NLog;
 
 /**
- * Handle keyboard input, for desktop mode
+ * Handle joypad input, for desktop mode
  */
-public class KeyboardInputHandler extends ControllerAdapter implements GameInputHandler {
+public class PadInputHandler extends ControllerAdapter implements GameInputHandler {
     public enum Action {
         LEFT(0),
         RIGHT(1),
@@ -30,17 +30,17 @@ public class KeyboardInputHandler extends ControllerAdapter implements GameInput
     public static class Factory implements GameInputHandlerFactory {
         @Override
         public String getId() {
-            return "keyboard";
+            return "pad";
         }
 
         @Override
         public String getName() {
-            return "Keyboard";
+            return "Joypad";
         }
 
         @Override
         public String getDescription() {
-            return "Left and Right keys: Drive.\nLeft-Ctrl: Activate bonus.";
+            return "Pad to drive, button to trigger bonuses.";
         }
 
         @Override
@@ -50,17 +50,11 @@ public class KeyboardInputHandler extends ControllerAdapter implements GameInput
 
     }
 
-    private final int[] mKeyForAction = new int[4];
     private final BonusIndicator mBonusIndicator = new BonusIndicator();
     private GameInput mInput = new GameInput();
     private Controller mController;
 
-    public KeyboardInputHandler() {
-        mKeyForAction[Action.LEFT.id] = Input.Keys.LEFT;
-        mKeyForAction[Action.RIGHT.id] = Input.Keys.RIGHT;
-        mKeyForAction[Action.BRAKE.id] = Input.Keys.DOWN;
-        mKeyForAction[Action.TRIGGER.id] = Input.Keys.CONTROL_RIGHT;
-
+    public PadInputHandler() {
         for (Controller controller : Controllers.getControllers()) {
             NLog.i("controller %s", controller.getName());
             mController = controller;
