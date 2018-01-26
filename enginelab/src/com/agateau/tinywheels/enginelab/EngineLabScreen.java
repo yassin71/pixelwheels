@@ -1,7 +1,6 @@
 package com.agateau.tinywheels.enginelab;
 
-import com.agateau.tinywheels.SoundAtlas;
-import com.agateau.tinywheels.sound.EngineSound;
+import com.agateau.tinywheels.sound.SynthEngineSound;
 import com.agateau.ui.Menu;
 import com.agateau.ui.SliderMenuItem;
 import com.agateau.ui.StageScreen;
@@ -12,21 +11,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import java.util.Locale;
 
 /**
  * Main screen for EngineLab
  */
 class EngineLabScreen extends StageScreen {
     private Skin mSkin;
-    private EngineSound mEngineSound;
+    private SynthEngineSound mEngineSound;
     private SliderMenuItem mSpeedItem;
+    private SynthEngineSound.Settings mSettings = new SynthEngineSound.Settings();
 
-    private SliderMenuItem mPitchItem;
-    private Array<SliderMenuItem> mVolumeItems = new Array<SliderMenuItem>();
+    private SliderMenuItem mFreqItem;
+    private SliderMenuItem mGainItem;
+    private SliderMenuItem mNoiseItem;
 
     public EngineLabScreen() {
         super(new ScreenViewport());
@@ -90,39 +88,36 @@ class EngineLabScreen extends StageScreen {
         mSpeedItem.setRange(0, 1, 0.01f);
         menu.addItemWithLabel("Speed", mSpeedItem);
 
-        mPitchItem = new SliderMenuItem(menu);
-        mPitchItem.setRange(EngineSound.MIN_PITCH, EngineSound.MAX_PITCH, 0.01f);
-        menu.addItemWithLabel("Pitch", mPitchItem);
+        mFreqItem = new SliderMenuItem(menu);
+        mFreqItem.setRange(50, 200, 1);
+        mFreqItem.setIntValue(mSettings.frequency);
+        menu.addItemWithLabel("Freq", mFreqItem);
 
-        menu.addLabel("Volumes");
-        for (int i = 0; i < mEngineSound.getSoundCount(); ++i) {
-            SliderMenuItem item = new SliderMenuItem(menu);
-            item.setRange(0, 1, 0.01f);
-            menu.addItemWithLabel(String.valueOf(i), item);
-            mVolumeItems.add(item);
-        }
+        mGainItem = new SliderMenuItem(menu);
+        mGainItem.setRange(0.5f, 2, 0.01f);
+        mGainItem.setFloatValue(mSettings.gain);
+        menu.addItemWithLabel("Gain", mGainItem);
+
+        mNoiseItem = new SliderMenuItem(menu);
+        mNoiseItem.setRange(0, 1, 0.01f);
+        mNoiseItem.setFloatValue(mSettings.noise);
+        menu.addItemWithLabel("Noise", mNoiseItem);
 
         root.addPositionRule(menu, Anchor.CENTER, root, Anchor.CENTER);
     }
 
     private void setupEngineLab() {
-        SoundAtlas soundAtlas = new SoundAtlas(Gdx.files.internal("sounds"));
-        for (int i = 0; i < 5; ++i) {
-            String name = String.format(Locale.US, "engine-%d", i);
-            String filename = String.format(Locale.US, "loop_%d_0.wav", i + 1);
-            soundAtlas.load(filename, name);
-        }
-        mEngineSound = new EngineSound(soundAtlas);
+        mEngineSound = new SynthEngineSound();
     }
 
     @Override
     public void render(float dt) {
         super.render(dt);
+        mSettings.frequency = mFreqItem.getIntValue();
+        mSettings.gain = mGainItem.getFloatValue();
+        mSettings.noise = mNoiseItem.getFloatValue();
+        mEngineSound.setSettings(mSettings);
         mEngineSound.play(mSpeedItem.getFloatValue());
-        mPitchItem.setFloatValue(mEngineSound.getPitch());
-        for (int i = 0; i < mEngineSound.getSoundCount(); ++i) {
-            mVolumeItems.get(i).setFloatValue(mEngineSound.getSoundVolume(i));
-        }
     }
 
     @Override
