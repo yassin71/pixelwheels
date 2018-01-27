@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
  * A synthesised engine sound
  */
 public class SynthEngineSound {
-    private static final int SAMPLE_DURATION_MS = 200;
+    private static final int SAMPLE_DURATION_MS = 50;
     private static final int SAMPLING_RATE = 44100;
     private final AudioDevice mDevice;
     private float[][] mBuffers = new float[2][SAMPLE_DURATION_MS * SAMPLING_RATE / 1000];
@@ -22,7 +22,7 @@ public class SynthEngineSound {
         @Override
         public void run() {
             while (!interrupted()) {
-                float[] buffer = getPlayBuffer();
+                float[] buffer = swapBuffers();
                 mDevice.writeSamples(buffer, 0, buffer.length);
             }
         }
@@ -30,8 +30,11 @@ public class SynthEngineSound {
 
     public static class Settings {
         public int frequency = 100;
-        public float noise = 0.5f;
-        public float gain = 1.5f;
+        public float gain = 1f;
+        public int modulationFrequency = 20;
+        public float modulationStrength = 0.2f;
+        public float echoStrength = 0.5f;
+        public float echoDelay = 0.2f;
     }
 
     public SynthEngineSound() {
@@ -50,21 +53,25 @@ public class SynthEngineSound {
         mSettings = settings;
     }
 
-    private synchronized float[] getPlayBuffer() {
+    /**
+     * Swap buffers, returns the new play buffer
+     */
+    private synchronized float[] swapBuffers() {
         mPlayingBufferIdx = (mPlayingBufferIdx + 1) % 2;
         mNeedUpdate = true;
         return mBuffers[mPlayingBufferIdx];
     }
 
-    private synchronized float[] getWorkBuffer() {
-        if (!mNeedUpdate) {
-            return null;
-        }
-        mNeedUpdate = false;
+    public float[] getWorkBuffer() {
         return mBuffers[(mPlayingBufferIdx + 1) % 2];
     }
 
     private synchronized void updateBuffer() {
+        if (!mNeedUpdate) {
+            return;
+        }
+        mNeedUpdate = false;
+
         float[] buffer = getWorkBuffer();
         if (buffer == null) {
             return;
@@ -72,26 +79,76 @@ public class SynthEngineSound {
         for (int idx = 0; idx < buffer.length; ++idx, ++mSampleIdx) {
             float t = (float)(mSampleIdx) / SAMPLING_RATE;
             float value = 0;
-            for (int i = 0; i < 4; ++i) {
-                value += generateCylinder(t, i);
+            int cylinderCount = 1;
+            float period = 1f / mSettings.frequency;
+            for (int i = 0; i < cylinderCount; ++i) {
+                float phase = i * period / cylinderCount;
+                //value += generateSawTooth(t + phase, mSettings.frequency) / cylinderCount;
+                value += generatePop(t + phase, mSettings.frequency) / cylinderCount;
+            }
+            //value = generateSin(t);
+            //value = distort(value);
+
+            if (value >= 0) {
+                value = (float) Math.pow(value, 1 / mSettings.gain);
+            } else {
+                value = -(float) Math.pow(-value, 1 / mSettings.gain);
             }
 
-            value = (float)Math.pow(value, mSettings.gain);
+            if (mSettings.modulationStrength > 0) {
+                float modulation = (1 - 2 * mSettings.modulationStrength) + mSettings.modulationStrength * (float) Math.sin(t * mSettings.modulationFrequency * MathUtils.PI2);
+                value *= modulation;
+            }
+
+            if (mSettings.echoStrength > 0) {
+                value = applyEcho(t, value);
+            }
+
             buffer[idx] = MathUtils.clamp(value, -1, 1);
         }
     }
 
-    private float generateCylinder(float time, int idx) {
+    private float generateSin(float time, float frequency) {
+        float period = 1f / frequency;
+        time %= period;
+        return MathUtils.sin(time * frequency * MathUtils.PI2);
+    }
+
+    private float generatePop(float time, float frequency) {
+        float period = 1f / frequency;
+        time %= period;
+        if (time < period / 2) {
+            return MathUtils.sin(time * frequency * MathUtils.PI2);
+        } else {
+            return 0;
+        }
+    }
+
+    private float generateSawTooth(float time, float frequency) {
+        float period = 1f / frequency;
+        time %= period;
+        return 1 - (float)Math.pow(time / period, 1f) - 0.5f;
+    }
+
+    private float generateSquare(float time) {
         float period = 1f / mSettings.frequency;
         time %= period;
-        float popStart = idx * period / 4;
-        float popDuration = period / 2;
-        if (time >= popStart && time < popStart + popDuration) {
-            float popTime = time - popStart;
-            float value = MathUtils.sin(popTime * mSettings.frequency * MathUtils.PI2);
-            value += MathUtils.random(-mSettings.noise, mSettings.noise);
-            return value;
+        return (time < period / 2) ? 1 : -1;
+    }
+
+    private float distort(float value) {
+        return value + MathUtils.random(-0.001f, 0.001f);
+    }
+
+    private float[] mEchoBuffer;
+    private float applyEcho(float time, float value) {
+        int bufferLength = (int)(mSettings.echoDelay * SAMPLING_RATE);
+        if (mEchoBuffer == null || mEchoBuffer.length < bufferLength) {
+            mEchoBuffer = new float[bufferLength];
         }
-        return 0;
+        int currentIdx = (int)(time * SAMPLING_RATE) % mEchoBuffer.length;
+        int referenceIdx = (int)((time - mSettings.echoDelay) * SAMPLING_RATE) % mEchoBuffer.length;
+        mEchoBuffer[currentIdx] = value;
+        return value + mEchoBuffer[referenceIdx] * mSettings.echoStrength;
     }
 }

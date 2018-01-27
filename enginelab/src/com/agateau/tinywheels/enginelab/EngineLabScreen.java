@@ -6,6 +6,7 @@ import com.agateau.ui.SliderMenuItem;
 import com.agateau.ui.StageScreen;
 import com.agateau.ui.anchor.Anchor;
 import com.agateau.ui.anchor.AnchorGroup;
+import com.agateau.ui.anchor.SizeRule;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -24,7 +25,10 @@ class EngineLabScreen extends StageScreen {
 
     private SliderMenuItem mFreqItem;
     private SliderMenuItem mGainItem;
-    private SliderMenuItem mNoiseItem;
+    private SliderMenuItem mModFrequencyItem;
+    private SliderMenuItem mModStrengthItem;
+    private SliderMenuItem mEchoStrengthItem;
+    private SliderMenuItem mEchoDelayItem;
 
     public EngineLabScreen() {
         super(new ScreenViewport());
@@ -89,21 +93,43 @@ class EngineLabScreen extends StageScreen {
         menu.addItemWithLabel("Speed", mSpeedItem);
 
         mFreqItem = new SliderMenuItem(menu);
-        mFreqItem.setRange(50, 200, 1);
+        mFreqItem.setRange(50, 500, 1);
         mFreqItem.setIntValue(mSettings.frequency);
         menu.addItemWithLabel("Freq", mFreqItem);
 
         mGainItem = new SliderMenuItem(menu);
-        mGainItem.setRange(0.5f, 2, 0.01f);
+        mGainItem.setRange(1, 2, 0.01f);
         mGainItem.setFloatValue(mSettings.gain);
         menu.addItemWithLabel("Gain", mGainItem);
 
-        mNoiseItem = new SliderMenuItem(menu);
-        mNoiseItem.setRange(0, 1, 0.01f);
-        mNoiseItem.setFloatValue(mSettings.noise);
-        menu.addItemWithLabel("Noise", mNoiseItem);
+        menu.addTitleLabel("Mod");
+        mModStrengthItem = new SliderMenuItem(menu);
+        mModStrengthItem.setRange(0, 0.5f, 0.1f);
+        mModStrengthItem.setFloatValue(mSettings.modulationStrength);
+        menu.addItemWithLabel("Strength", mModStrengthItem);
 
-        root.addPositionRule(menu, Anchor.CENTER, root, Anchor.CENTER);
+        mModFrequencyItem = new SliderMenuItem(menu);
+        mModFrequencyItem.setRange(10, 2000, 10);
+        mModFrequencyItem.setIntValue(mSettings.modulationFrequency);
+        menu.addItemWithLabel("Frequency", mModFrequencyItem);
+
+        menu.addTitleLabel("Echo");
+        mEchoStrengthItem = new SliderMenuItem(menu);
+        mEchoStrengthItem.setRange(0, 1f, 0.1f);
+        mEchoStrengthItem.setFloatValue(mSettings.echoStrength);
+        menu.addItemWithLabel("Strength", mEchoStrengthItem);
+
+        mEchoDelayItem = new SliderMenuItem(menu);
+        mEchoDelayItem.setRange(0.1f, 1f, 0.1f);
+        mEchoDelayItem.setFloatValue(mSettings.echoDelay);
+        menu.addItemWithLabel("Delay", mEchoDelayItem);
+
+        root.addPositionRule(menu, Anchor.TOP_CENTER, root, Anchor.TOP_CENTER);
+
+        SoundView view = new SoundView();
+        view.setSound(mEngineSound);
+        root.addPositionRule(view, Anchor.BOTTOM_LEFT, root, Anchor.BOTTOM_LEFT);
+        root.addSizeRule(view, root, 1, SizeRule.IGNORE);
     }
 
     private void setupEngineLab() {
@@ -115,7 +141,10 @@ class EngineLabScreen extends StageScreen {
         super.render(dt);
         mSettings.frequency = mFreqItem.getIntValue();
         mSettings.gain = mGainItem.getFloatValue();
-        mSettings.noise = mNoiseItem.getFloatValue();
+        mSettings.modulationFrequency = mModFrequencyItem.getIntValue();
+        mSettings.modulationStrength = mModStrengthItem.getFloatValue();
+        mSettings.echoStrength = mEchoStrengthItem.getFloatValue();
+        mSettings.echoDelay = mEchoDelayItem.getFloatValue();
         mEngineSound.setSettings(mSettings);
         mEngineSound.play(mSpeedItem.getFloatValue());
     }
