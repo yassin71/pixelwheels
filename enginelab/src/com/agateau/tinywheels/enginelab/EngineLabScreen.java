@@ -30,6 +30,7 @@ class EngineLabScreen extends StageScreen {
     private SliderMenuItem mModStrengthItem;
     private SliderMenuItem mEchoStrengthItem;
     private SliderMenuItem mEchoDelayItem;
+    private SliderMenuItem mLpfBetaItem;
 
     public EngineLabScreen() {
         super(new ScreenViewport());
@@ -112,6 +113,11 @@ class EngineLabScreen extends StageScreen {
         mGainItem.setFloatValue(mSettings.gain);
         menu.addItemWithLabel("Gain", mGainItem);
 
+        mLpfBetaItem = new SliderMenuItem(menu);
+        mLpfBetaItem.setRange(0.001f, 1f, 0.001f);
+        mLpfBetaItem.setFloatValue(mSettings.lpfBeta);
+        menu.addItemWithLabel("LPF", mLpfBetaItem);
+
         menu.addTitleLabel("Mod");
         mModStrengthItem = new SliderMenuItem(menu);
         mModStrengthItem.setRange(0, 0.5f, 0.1f);
@@ -156,6 +162,7 @@ class EngineLabScreen extends StageScreen {
         mSettings.modulationStrength = mModStrengthItem.getFloatValue();
         mSettings.echoStrength = mEchoStrengthItem.getFloatValue();
         mSettings.echoDelay = mEchoDelayItem.getFloatValue();
+        mSettings.lpfBeta = mLpfBetaItem.getFloatValue();
         mEngineSound.setSettings(mSettings);
         mEngineSound.play(12);
     }

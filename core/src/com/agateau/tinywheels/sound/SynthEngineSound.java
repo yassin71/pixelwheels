@@ -55,6 +55,7 @@ public class SynthEngineSound {
         public float modulationStrength = 0.2f;
         public float echoStrength = 0.5f;
         public float echoDelay = 0.2f;
+        public float lpfBeta = 0.2f;
     }
 
     public SynthEngineSound() {
@@ -142,6 +143,7 @@ public class SynthEngineSound {
             if (mSettings.echoStrength > 0) {
                 value = applyEcho(t, value);
             }
+            value = lowPassFilter(value, mSettings.lpfBeta);
 
             buffer[idx] = MathUtils.clamp(value, -1, 1);
         }
@@ -192,5 +194,12 @@ public class SynthEngineSound {
         }
         mEchoBuffer[currentIdx] = value;
         return value + mEchoBuffer[referenceIdx] * mSettings.echoStrength;
+    }
+
+    private float mPreviousValue = 0;
+    private float lowPassFilter(float value, float beta) {
+        value = mPreviousValue - beta * (mPreviousValue - value);
+        mPreviousValue = value;
+        return value;
     }
 }
