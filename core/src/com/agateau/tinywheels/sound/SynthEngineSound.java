@@ -124,6 +124,8 @@ public class SynthEngineSound {
                     value = generateSawTooth(t, mSettings.frequency);
                     break;
             }
+
+            value *= MathUtils.random(0.6f, 1f);
             //value = distort(value);
 
             if (value >= 0) {
