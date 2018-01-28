@@ -18,6 +18,13 @@ public class SynthEngineSound {
 
     private Settings mSettings;
 
+    public enum WaveForm {
+        SIN,
+        POP,
+        SAWTOOTH,
+        SQUARE,
+    }
+
     class AudioThread extends Thread {
         @Override
         public void run() {
@@ -41,6 +48,7 @@ public class SynthEngineSound {
     private AudioThread mThread = new AudioThread();
 
     public static class Settings {
+        public WaveForm waveForm = WaveForm.POP;
         public int frequency = 100;
         public float gain = 1f;
         public int modulationFrequency = 20;
@@ -100,15 +108,22 @@ public class SynthEngineSound {
         }
         for (int idx = 0; idx < buffer.length; ++idx, ++mSampleIdx) {
             float t = (float)(mSampleIdx) / SAMPLING_RATE;
-            float value = 0;
-            int cylinderCount = 1;
             float period = 1f / mSettings.frequency;
-            for (int i = 0; i < cylinderCount; ++i) {
-                float phase = i * period / cylinderCount;
-                //value += generateSawTooth(t + phase, mSettings.frequency) / cylinderCount;
-                value += generatePop(t + phase, mSettings.frequency) / cylinderCount;
+            float value = 0;
+            switch (mSettings.waveForm) {
+                case POP:
+                    value = generatePop(t, mSettings.frequency);
+                    break;
+                case SIN:
+                    value = generateSin(t, mSettings.frequency);
+                    break;
+                case SQUARE:
+                    value = generateSquare(t, mSettings.frequency);
+                    break;
+                case SAWTOOTH:
+                    value = generateSawTooth(t, mSettings.frequency);
+                    break;
             }
-            //value = generateSin(t);
             //value = distort(value);
 
             if (value >= 0) {
@@ -140,7 +155,7 @@ public class SynthEngineSound {
         float period = 1f / frequency;
         time %= period;
         if (time < period / 2) {
-            return MathUtils.sin(time * frequency * MathUtils.PI2);
+            return MathUtils.cos(time * frequency * MathUtils.PI2 / 2);
         } else {
             return 0;
         }
@@ -149,11 +164,11 @@ public class SynthEngineSound {
     private float generateSawTooth(float time, float frequency) {
         float period = 1f / frequency;
         time %= period;
-        return 1 - (float)Math.pow(time / period, 1f) - 0.5f;
+        return 1 - (float)Math.pow(time / period, 1 / 3f) - 0.5f;
     }
 
-    private float generateSquare(float time) {
-        float period = 1f / mSettings.frequency;
+    private float generateSquare(float time, float frequency) {
+        float period = 1f / frequency;
         time %= period;
         return (time < period / 2) ? 1 : -1;
     }

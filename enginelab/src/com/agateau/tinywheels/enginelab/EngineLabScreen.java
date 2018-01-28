@@ -2,6 +2,7 @@ package com.agateau.tinywheels.enginelab;
 
 import com.agateau.tinywheels.sound.SynthEngineSound;
 import com.agateau.ui.Menu;
+import com.agateau.ui.SelectorMenuItem;
 import com.agateau.ui.SliderMenuItem;
 import com.agateau.ui.StageScreen;
 import com.agateau.ui.anchor.Anchor;
@@ -20,10 +21,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 class EngineLabScreen extends StageScreen {
     private Skin mSkin;
     private SynthEngineSound mEngineSound;
-    private SliderMenuItem mSpeedItem;
     private SynthEngineSound.Settings mSettings = new SynthEngineSound.Settings();
 
-    private SliderMenuItem mFreqItem;
+    private SelectorMenuItem<SynthEngineSound.WaveForm> mWaveFormItem;
+    private SliderMenuItem mFrequencyItem;
     private SliderMenuItem mGainItem;
     private SliderMenuItem mModFrequencyItem;
     private SliderMenuItem mModStrengthItem;
@@ -93,14 +94,18 @@ class EngineLabScreen extends StageScreen {
         menu.setLabelColumnWidth(200);
         menu.setDefaultItemWidth(500);
 
-        mSpeedItem = new SliderMenuItem(menu);
-        mSpeedItem.setRange(0, 1, 0.01f);
-        menu.addItemWithLabel("Speed", mSpeedItem);
+        mWaveFormItem = new SelectorMenuItem<SynthEngineSound.WaveForm>(menu);
+        mWaveFormItem.addEntry("Sin", SynthEngineSound.WaveForm.SIN);
+        mWaveFormItem.addEntry("Sawtooth", SynthEngineSound.WaveForm.SAWTOOTH);
+        mWaveFormItem.addEntry("Pop", SynthEngineSound.WaveForm.POP);
+        mWaveFormItem.addEntry("Square", SynthEngineSound.WaveForm.SQUARE);
+        mWaveFormItem.setData(mSettings.waveForm);
+        menu.addItemWithLabel("Wave form", mWaveFormItem);
 
-        mFreqItem = new SliderMenuItem(menu);
-        mFreqItem.setRange(50, 500, 1);
-        mFreqItem.setIntValue(mSettings.frequency);
-        menu.addItemWithLabel("Freq", mFreqItem);
+        mFrequencyItem = new SliderMenuItem(menu);
+        mFrequencyItem.setRange(10, 800);
+        mFrequencyItem.setIntValue(mSettings.frequency);
+        menu.addItemWithLabel("Frequency", mFrequencyItem);
 
         mGainItem = new SliderMenuItem(menu);
         mGainItem.setRange(1, 2, 0.01f);
@@ -144,14 +149,15 @@ class EngineLabScreen extends StageScreen {
     @Override
     public void render(float dt) {
         super.render(dt);
-        mSettings.frequency = mFreqItem.getIntValue();
+        mSettings.waveForm = mWaveFormItem.getData();
+        mSettings.frequency = mFrequencyItem.getIntValue();
         mSettings.gain = mGainItem.getFloatValue();
         mSettings.modulationFrequency = mModFrequencyItem.getIntValue();
         mSettings.modulationStrength = mModStrengthItem.getFloatValue();
         mSettings.echoStrength = mEchoStrengthItem.getFloatValue();
         mSettings.echoDelay = mEchoDelayItem.getFloatValue();
         mEngineSound.setSettings(mSettings);
-        mEngineSound.play(mSpeedItem.getFloatValue());
+        mEngineSound.play(12);
     }
 
     @Override
