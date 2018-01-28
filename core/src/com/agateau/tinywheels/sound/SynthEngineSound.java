@@ -185,6 +185,9 @@ public class SynthEngineSound {
         }
         int currentIdx = (int)(time * SAMPLING_RATE) % mEchoBuffer.length;
         int referenceIdx = (int)((time - mSettings.echoDelay) * SAMPLING_RATE) % mEchoBuffer.length;
+        if (referenceIdx < 0) {
+            referenceIdx += mEchoBuffer.length;
+        }
         mEchoBuffer[currentIdx] = value;
         return value + mEchoBuffer[referenceIdx] * mSettings.echoStrength;
     }
