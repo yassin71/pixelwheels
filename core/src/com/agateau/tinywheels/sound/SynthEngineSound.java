@@ -51,9 +51,9 @@ public class SynthEngineSound {
         public WaveForm waveForm = WaveForm.POP;
         public int frequency = 100;
         public float gain = 1f;
+        public float modulationStrength = 0f;
         public int modulationFrequency = 20;
-        public float modulationStrength = 0.2f;
-        public float echoStrength = 0.5f;
+        public float echoStrength = 0f;
         public float echoDelay = 0.2f;
         public float lpfBeta = 0.2f;
     }

@@ -136,7 +136,7 @@ class EngineLabScreen extends StageScreen {
         menu.addItemWithLabel("Strength", mEchoStrengthItem);
 
         mEchoDelayItem = new SliderMenuItem(menu);
-        mEchoDelayItem.setRange(0.1f, 1f, 0.1f);
+        mEchoDelayItem.setRange(0.001f, 1f, 0.001f);
         mEchoDelayItem.setFloatValue(mSettings.echoDelay);
         menu.addItemWithLabel("Delay", mEchoDelayItem);
 
