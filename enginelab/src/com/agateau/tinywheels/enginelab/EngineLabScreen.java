@@ -37,6 +37,11 @@ class EngineLabScreen extends StageScreen {
         setupUi();
     }
 
+    @Override
+    public void hide() {
+        mEngineSound.dispose();
+    }
+
     private void loadSkin() {
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("ui/uiskin.atlas"));
         mSkin = new Skin(atlas);

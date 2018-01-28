@@ -18,15 +18,27 @@ public class SynthEngineSound {
 
     private Settings mSettings;
 
-    private Thread mThread = new Thread() {
+    class AudioThread extends Thread {
         @Override
         public void run() {
-            while (!interrupted()) {
+            while (!isCanceled()) {
                 float[] buffer = swapBuffers();
                 mDevice.writeSamples(buffer, 0, buffer.length);
             }
         }
-    };
+
+        synchronized public void cancel() {
+            mCanceled = true;
+        }
+
+        synchronized private boolean isCanceled() {
+            return mCanceled;
+        }
+
+        boolean mCanceled = false;
+    }
+
+    private AudioThread mThread = new AudioThread();
 
     public static class Settings {
         public int frequency = 100;
@@ -39,6 +51,16 @@ public class SynthEngineSound {
 
     public SynthEngineSound() {
         mDevice = Gdx.audio.newAudioDevice(SAMPLING_RATE, /* mono= */true);
+    }
+
+    public void dispose() {
+        mThread.cancel();
+        try {
+            mThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mDevice.dispose();
     }
 
     public void play(float speed) {
