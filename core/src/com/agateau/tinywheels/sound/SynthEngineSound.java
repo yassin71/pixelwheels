@@ -50,8 +50,8 @@ public class SynthEngineSound {
 
     public static class Settings {
         public WaveForm waveForm = WaveForm.POP;
-        public int minFrequency = 10;
-        public int maxFrequency = 200;
+        public int minFrequency = 40;
+        public int maxFrequency = 250;
         public float gain = 1f;
         public float modulationStrength = 0f;
         public int modulationFrequency = 20;
