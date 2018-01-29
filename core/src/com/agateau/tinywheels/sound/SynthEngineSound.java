@@ -11,12 +11,14 @@ public class SynthEngineSound {
     private static final int SAMPLE_DURATION_MS = 50;
     private static final int SAMPLING_RATE = 44100;
     private final AudioDevice mDevice;
-    private float[][] mBuffers = new float[2][SAMPLE_DURATION_MS * SAMPLING_RATE / 1000];
+    private final float[][] mBuffers = new float[2][SAMPLE_DURATION_MS * SAMPLING_RATE / 1000];
     private int mPlayingBufferIdx = 0;
     private long mSampleIdx = 0;
     private boolean mNeedUpdate = false;
 
     private Settings mSettings;
+
+    private AudioThread mThread = new AudioThread();
 
     public enum WaveForm {
         SIN,
@@ -34,7 +36,7 @@ public class SynthEngineSound {
             }
         }
 
-        synchronized public void cancel() {
+        synchronized void cancel() {
             mCanceled = true;
         }
 
@@ -44,8 +46,6 @@ public class SynthEngineSound {
 
         boolean mCanceled = false;
     }
-
-    private AudioThread mThread = new AudioThread();
 
     public static class Settings {
         public WaveForm waveForm = WaveForm.POP;
@@ -109,7 +109,6 @@ public class SynthEngineSound {
         }
         for (int idx = 0; idx < buffer.length; ++idx, ++mSampleIdx) {
             float t = (float)(mSampleIdx) / SAMPLING_RATE;
-            float period = 1f / mSettings.frequency;
             float value = 0;
             switch (mSettings.waveForm) {
                 case POP:
