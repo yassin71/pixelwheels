@@ -17,7 +17,7 @@ public class SynthEngineSound {
     private boolean mNeedUpdate = false;
     private float mSpeed = 0;
 
-    private Settings mSettings;
+    private Settings mSettings = new Settings();
 
     private AudioThread mThread = new AudioThread();
 
