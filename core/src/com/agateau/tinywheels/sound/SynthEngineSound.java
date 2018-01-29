@@ -15,6 +15,7 @@ public class SynthEngineSound {
     private int mPlayingBufferIdx = 0;
     private long mSampleIdx = 0;
     private boolean mNeedUpdate = false;
+    private float mSpeed = 0;
 
     private Settings mSettings;
 
@@ -49,7 +50,8 @@ public class SynthEngineSound {
 
     public static class Settings {
         public WaveForm waveForm = WaveForm.POP;
-        public int frequency = 100;
+        public int minFrequency = 10;
+        public int maxFrequency = 200;
         public float gain = 1f;
         public float modulationStrength = 0f;
         public int modulationFrequency = 20;
@@ -73,8 +75,8 @@ public class SynthEngineSound {
     }
 
     public void play(float speed) {
+        mSpeed = speed;
         updateBuffer();
-        // TODO: take speed into account
         if (!mThread.isAlive()) {
             mThread.start();
         }
@@ -109,19 +111,20 @@ public class SynthEngineSound {
         }
         for (int idx = 0; idx < buffer.length; ++idx, ++mSampleIdx) {
             float t = (float)(mSampleIdx) / SAMPLING_RATE;
+            float frequency = MathUtils.lerp(mSettings.minFrequency, mSettings.maxFrequency, mSpeed);
             float value = 0;
             switch (mSettings.waveForm) {
                 case POP:
-                    value = generatePop(t, mSettings.frequency);
+                    value = generatePop(t, frequency);
                     break;
                 case SIN:
-                    value = generateSin(t, mSettings.frequency);
+                    value = generateSin(t, frequency);
                     break;
                 case SQUARE:
-                    value = generateSquare(t, mSettings.frequency);
+                    value = generateSquare(t, frequency);
                     break;
                 case SAWTOOTH:
-                    value = generateSawTooth(t, mSettings.frequency);
+                    value = generateSawTooth(t, frequency);
                     break;
             }
 

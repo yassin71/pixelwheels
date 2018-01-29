@@ -23,8 +23,10 @@ class EngineLabScreen extends StageScreen {
     private SynthEngineSound mEngineSound;
     private SynthEngineSound.Settings mSettings = new SynthEngineSound.Settings();
 
+    private SliderMenuItem mSpeedItem;
+    private SliderMenuItem mMinFrequencyItem;
+    private SliderMenuItem mMaxFrequencyItem;
     private SelectorMenuItem<SynthEngineSound.WaveForm> mWaveFormItem;
-    private SliderMenuItem mFrequencyItem;
     private SliderMenuItem mGainItem;
     private SliderMenuItem mModFrequencyItem;
     private SliderMenuItem mModStrengthItem;
@@ -92,8 +94,13 @@ class EngineLabScreen extends StageScreen {
         root.setFillParent(true);
 
         Menu menu = new Menu(mSkin);
-        menu.setLabelColumnWidth(200);
-        menu.setDefaultItemWidth(500);
+        menu.setLabelColumnWidth(300);
+        menu.setDefaultItemWidth(600);
+
+        mSpeedItem = new SliderMenuItem(menu);
+        mSpeedItem.setRange(0, 1, 0.01f);
+        mSpeedItem.setIntValue(0);
+        menu.addItemWithLabel("Speed", mSpeedItem);
 
         mWaveFormItem = new SelectorMenuItem<SynthEngineSound.WaveForm>(menu);
         mWaveFormItem.addEntry("Sin", SynthEngineSound.WaveForm.SIN);
@@ -103,10 +110,15 @@ class EngineLabScreen extends StageScreen {
         mWaveFormItem.setData(mSettings.waveForm);
         menu.addItemWithLabel("Wave form", mWaveFormItem);
 
-        mFrequencyItem = new SliderMenuItem(menu);
-        mFrequencyItem.setRange(10, 800);
-        mFrequencyItem.setIntValue(mSettings.frequency);
-        menu.addItemWithLabel("Frequency", mFrequencyItem);
+        mMinFrequencyItem = new SliderMenuItem(menu);
+        mMinFrequencyItem.setRange(10, 800);
+        mMinFrequencyItem.setIntValue(mSettings.minFrequency);
+        menu.addItemWithLabel("Min frequency", mMinFrequencyItem);
+
+        mMaxFrequencyItem = new SliderMenuItem(menu);
+        mMaxFrequencyItem.setRange(10, 800);
+        mMaxFrequencyItem.setIntValue(mSettings.maxFrequency);
+        menu.addItemWithLabel("Max frequency", mMaxFrequencyItem);
 
         mGainItem = new SliderMenuItem(menu);
         mGainItem.setRange(1, 2, 0.01f);
@@ -155,8 +167,9 @@ class EngineLabScreen extends StageScreen {
     @Override
     public void render(float dt) {
         super.render(dt);
+        mSettings.minFrequency = mMinFrequencyItem.getIntValue();
+        mSettings.maxFrequency = mMaxFrequencyItem.getIntValue();
         mSettings.waveForm = mWaveFormItem.getData();
-        mSettings.frequency = mFrequencyItem.getIntValue();
         mSettings.gain = mGainItem.getFloatValue();
         mSettings.modulationFrequency = mModFrequencyItem.getIntValue();
         mSettings.modulationStrength = mModStrengthItem.getFloatValue();
@@ -164,7 +177,7 @@ class EngineLabScreen extends StageScreen {
         mSettings.echoDelay = mEchoDelayItem.getFloatValue();
         mSettings.lpfBeta = mLpfBetaItem.getFloatValue();
         mEngineSound.setSettings(mSettings);
-        mEngineSound.play(12);
+        mEngineSound.play(mSpeedItem.getFloatValue());
     }
 
     @Override
