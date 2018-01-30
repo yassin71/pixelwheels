@@ -112,21 +112,7 @@ public class SynthEngineSound {
         for (int idx = 0; idx < buffer.length; ++idx, ++mSampleIdx) {
             float t = (float)(mSampleIdx) / SAMPLING_RATE;
             float frequency = MathUtils.lerp(mSettings.minFrequency, mSettings.maxFrequency, mSpeed);
-            float value = 0;
-            switch (mSettings.waveForm) {
-                case POP:
-                    value = generatePop(t, frequency);
-                    break;
-                case SIN:
-                    value = generateSin(t, frequency);
-                    break;
-                case SQUARE:
-                    value = generateSquare(t, frequency);
-                    break;
-                case SAWTOOTH:
-                    value = generateSawTooth(t, frequency);
-                    break;
-            }
+            float value = generateWave(t, frequency);
 
             value *= MathUtils.random(0.6f, 1f);
             //value = distort(value);
@@ -149,6 +135,20 @@ public class SynthEngineSound {
 
             buffer[idx] = MathUtils.clamp(value, -1, 1);
         }
+    }
+
+    private float generateWave(float time, float frequency) {
+        switch (mSettings.waveForm) {
+            case POP:
+                return generatePop(time, frequency);
+            case SIN:
+                return generateSin(time, frequency);
+            case SQUARE:
+                return generateSquare(time, frequency);
+            case SAWTOOTH:
+                return generateSawTooth(time, frequency);
+        }
+        return 0;
     }
 
     private float generateSin(float time, float frequency) {
