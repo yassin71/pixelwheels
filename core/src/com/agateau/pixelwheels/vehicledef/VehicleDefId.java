@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Aurélien Gâteau <mail@agateau.com>
+ * Copyright 2019 Aurélien Gâteau <mail@agateau.com>
  *
  * This file is part of Pixel Wheels.
  *
@@ -18,17 +18,13 @@
  */
 package com.agateau.pixelwheels.vehicledef;
 
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.math.Shape2D;
+import com.agateau.utils.StrongId;
 
-/**
- * Definition of a vehicle
- */
-public class VehicleDef {
-    public VehicleDefId id;
-    public String name;
-    public float speed;
-    public String mainImage;
-    public Array<AxleDef> axles = new Array<AxleDef>();
-    public Array<Shape2D> shapes = new Array<Shape2D>();
+public class VehicleDefId extends StrongId {
+    public static final Registry<VehicleDefId> registry = new Registry<VehicleDefId>();
+
+    public VehicleDefId(String value) {
+        super(value);
+        registry.register(this);
+    }
 }

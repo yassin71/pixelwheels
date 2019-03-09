@@ -24,6 +24,7 @@ import com.agateau.pixelwheels.gamesetup.ChampionshipGameInfo;
 import com.agateau.pixelwheels.gamesetup.GameInfo;
 import com.agateau.pixelwheels.utils.StringUtils;
 import com.agateau.pixelwheels.utils.UiUtils;
+import com.agateau.pixelwheels.vehicledef.VehicleDef;
 import com.agateau.ui.RefreshHelper;
 import com.agateau.ui.TableRowCreator;
 import com.agateau.ui.UiBuilder;
@@ -90,9 +91,10 @@ public class ChampionshipFinishedScreen extends PwStageScreen {
             GameInfo.Entrant entrant = entrants.get(idx);
             String style = UiUtils.getEntrantRowStyle(entrant);
             mTableRowCreator.setRowStyle(style);
+            VehicleDef vehicleDef = mGame.getAssets().findVehicleDefById(entrant.getVehicleId());
             mTableRowCreator.addRow(
                     String.format(Locale.US, "%d.", idx + 1),
-                    entrant.getVehicleId(),
+                    vehicleDef.name,
                     String.valueOf(entrant.getScore()),
                     StringUtils.formatRaceTime(entrant.getRaceTime())
             );

@@ -29,6 +29,7 @@ import com.agateau.pixelwheels.screens.MainMenuScreen;
 import com.agateau.pixelwheels.screens.PwStageScreen;
 import com.agateau.pixelwheels.sound.AudioManager;
 import com.agateau.pixelwheels.sound.DefaultAudioManager;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.ui.ScreenStack;
 import com.agateau.utils.FileUtils;
 import com.agateau.utils.Introspector;
@@ -66,6 +67,17 @@ public class PwGame extends Game implements GameConfig.ChangeListener {
         return mAudioManager;
     }
 
+    static class Ids {
+        private static final String[] VEHICLE_IDS = { "red", "police", "pickup", "roadster", "antonin", "santa", "2cv", "harvester", "rocket" };
+
+        public static void createIds() {
+            VehicleDefId.registry.clear();
+            for (String id : VEHICLE_IDS) {
+                new VehicleDefId(id);
+            }
+        }
+    }
+
     @Override
     public void create() {
         mGamePlayIntrospector = new Introspector(GamePlay.instance, new GamePlay(),
@@ -76,6 +88,7 @@ public class PwGame extends Game implements GameConfig.ChangeListener {
         mGamePlayIntrospector.load();
         mDebugIntrospector.load();
 
+        Ids.createIds();
         mAssets = new Assets();
         setupConfig();
         setupTrackStats();

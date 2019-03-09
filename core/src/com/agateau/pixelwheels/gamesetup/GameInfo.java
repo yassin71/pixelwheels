@@ -22,6 +22,7 @@ import com.agateau.pixelwheels.GameConfig;
 import com.agateau.pixelwheels.GamePlay;
 import com.agateau.pixelwheels.map.Track;
 import com.agateau.pixelwheels.vehicledef.VehicleDef;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -48,7 +49,7 @@ public abstract class GameInfo {
         public abstract T build();
 
         void createEntrants(GameInfo gameInfo) {
-            Array<String> vehicleIds = new Array<String>();
+            Array<VehicleDefId> vehicleIds = new Array<VehicleDefId>();
             for (VehicleDef vehicleDef : mVehicleDefs) {
                 vehicleIds.add(vehicleDef.id);
             }
@@ -69,7 +70,7 @@ public abstract class GameInfo {
 
         private void storePlayersInConfig() {
             for (int idx = 0; idx < mGameConfig.vehicles.length; ++idx) {
-                String vehicleId = idx < mPlayers.size ? mPlayers.get(idx).mVehicleId : "";
+                VehicleDefId vehicleId = idx < mPlayers.size ? mPlayers.get(idx).mVehicleId : null;
                 mGameConfig.vehicles[idx] = vehicleId;
             }
             mGameConfig.flush();
@@ -77,12 +78,12 @@ public abstract class GameInfo {
     }
 
     public static class Entrant {
-        protected String mVehicleId;
+        protected VehicleDefId mVehicleId;
 
         private int mScore = 0;
         private float mRaceTime = 0;
 
-        public String getVehicleId() {
+        public VehicleDefId getVehicleId() {
             return mVehicleId;
         }
 
@@ -110,7 +111,7 @@ public abstract class GameInfo {
     public static class Player extends Entrant {
         private final int mIndex;
 
-        public Player(int idx, String vehicleId) {
+        public Player(int idx, VehicleDefId vehicleId) {
             mIndex = idx;
             mVehicleId = vehicleId;
         }

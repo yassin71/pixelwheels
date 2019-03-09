@@ -30,8 +30,8 @@ import com.agateau.utils.FileUtils;
  * Width and height are swapped, because vehicles are drawn vertically but body is horizontal
  */
 public class VehicleIO {
-    public static VehicleDef get(String id) {
-        String fileName = "vehicles/" + id + ".xml";
+    public static VehicleDef get(VehicleDefId id) {
+        String fileName = "vehicles/" + id.value + ".xml";
         FileHandle handle = FileUtils.assets(fileName);
         if (!handle.exists()) {
             throw new RuntimeException("No such file " + fileName);
@@ -46,7 +46,7 @@ public class VehicleIO {
         }
     }
 
-    public static VehicleDef get(XmlReader.Element root, String id) {
+    public static VehicleDef get(XmlReader.Element root, VehicleDefId id) {
         VehicleDef data = new VehicleDef();
         data.id = id;
         data.name = root.getAttribute("name");

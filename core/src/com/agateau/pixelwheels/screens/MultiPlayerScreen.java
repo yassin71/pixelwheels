@@ -25,6 +25,7 @@ import com.agateau.pixelwheels.PwGame;
 import com.agateau.pixelwheels.gameinput.GameInputHandler;
 import com.agateau.pixelwheels.gameinput.KeyboardInputHandler;
 import com.agateau.pixelwheels.gamesetup.GameInfo;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.ui.InputMapper;
 import com.agateau.ui.RefreshHelper;
 import com.agateau.ui.UiBuilder;
@@ -100,7 +101,7 @@ public class MultiPlayerScreen extends PwStageScreen {
 
     private void createVehicleSelector(UiBuilder builder, Assets assets, int idx) {
         GameConfig gameConfig = mGame.getConfig();
-        String vehicleId = gameConfig.vehicles[idx];
+        VehicleDefId vehicleId = gameConfig.vehicles[idx];
 
         Menu menu = builder.getActor("menu" + String.valueOf(idx + 1));
 
@@ -134,7 +135,7 @@ public class MultiPlayerScreen extends PwStageScreen {
     private void next() {
         Array<GameInfo.Player> players = new Array<GameInfo.Player>();
         for (int idx = 0; idx < mPlayerCount; ++idx) {
-            String id = mVehicleSelectors[idx].getSelectedId();
+            VehicleDefId id = mVehicleSelectors[idx].getSelected().id;
             players.add(new GameInfo.Player(idx, id));
         }
 

@@ -24,6 +24,7 @@ import com.agateau.pixelwheels.gamesetup.GameInfo;
 import com.agateau.pixelwheels.racer.Vehicle;
 import com.agateau.pixelwheels.utils.UiUtils;
 import com.agateau.pixelwheels.vehicledef.VehicleDef;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.ui.RefreshHelper;
 import com.agateau.ui.UiBuilder;
 import com.agateau.ui.anchor.AnchorGroup;
@@ -96,7 +97,7 @@ public class SelectVehicleScreen extends PwStageScreen {
         Assets assets = mGame.getAssets();
         mVehicleSelector = new VehicleSelector(menu);
         mVehicleSelector.init(assets);
-        String id = mGame.getConfig().vehicles[0];
+        VehicleDefId id = mGame.getConfig().vehicles[0];
         mVehicleSelector.setCurrent(assets.findVehicleDefById(id));
         menu.addItem(mVehicleSelector);
 
@@ -126,7 +127,7 @@ public class SelectVehicleScreen extends PwStageScreen {
     }
 
     private void next() {
-        String vehicleId = mVehicleSelector.getSelectedId();
+        VehicleDefId vehicleId = mVehicleSelector.getSelected().id;
         GameInfo.Player player = new GameInfo.Player(0, vehicleId);
         mListener.onPlayerSelected(player);
     }

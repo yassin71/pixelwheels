@@ -24,6 +24,7 @@ import com.agateau.pixelwheels.map.Track;
 import com.agateau.pixelwheels.sound.AudioManager;
 import com.agateau.pixelwheels.sound.SoundAtlas;
 import com.agateau.pixelwheels.vehicledef.VehicleDef;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.pixelwheels.vehicledef.VehicleIO;
 import com.agateau.ui.StrictTextureAtlas;
 import com.agateau.ui.UiAssets;
@@ -43,8 +44,6 @@ public class Assets {
     private static final float MINE_FRAME_DURATION = 0.2f;
     private static final float TURBO_FRAME_DURATION = 0.1f;
     private static final float TURBO_FLAME_FRAME_DURATION = 0.04f;
-
-    private static final String[] VEHICLE_IDS = { "red", "police", "pickup", "roadster", "antonin", "santa", "2cv", "harvester", "rocket" };
 
     public final Array<VehicleDef> vehicleDefs = new Array<VehicleDef>();
     public final Array<Track> tracks = new Array<Track>(new Track[]{
@@ -154,7 +153,7 @@ public class Assets {
         return this.atlas.findRegion(name);
     }
 
-    public VehicleDef findVehicleDefById(String id) {
+    public VehicleDef findVehicleDefById(VehicleDefId id) {
         for (VehicleDef def : vehicleDefs) {
             if (def.id.equals(id)) {
                 return def;
@@ -188,7 +187,7 @@ public class Assets {
     }
 
     private void loadVehicleDefinitions() {
-        for (String id : VEHICLE_IDS) {
+        for (VehicleDefId id : VehicleDefId.registry.getAll()) {
             this.vehicleDefs.add(VehicleIO.get(id));
         }
     }

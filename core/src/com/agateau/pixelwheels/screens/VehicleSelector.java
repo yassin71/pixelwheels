@@ -50,8 +50,4 @@ public class VehicleSelector extends GridMenuItem<VehicleDef> {
         setItemRenderer(renderer);
         setItems(mAssets.vehicleDefs);
     }
-
-    public String getSelectedId() {
-        return getSelected().id;
-    }
 }

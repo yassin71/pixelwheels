@@ -22,6 +22,7 @@ import com.agateau.pixelwheels.gameinput.GameInputHandler;
 import com.agateau.pixelwheels.gameinput.GameInputHandlerFactories;
 import com.agateau.pixelwheels.gameinput.GameInputHandlerFactory;
 import com.agateau.pixelwheels.gamesetup.GameMode;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.utils.Assert;
 import com.agateau.utils.log.NLog;
 import com.badlogic.gdx.Gdx;
@@ -44,7 +45,7 @@ public class GameConfig {
     public boolean audio = true;
 
     public GameMode gameMode = GameMode.QUICK_RACE;
-    public final String[] vehicles = new String[Constants.MAX_PLAYERS];
+    public final VehicleDefId[] vehicles = new VehicleDefId[Constants.MAX_PLAYERS];
     public String track;
     public String championship;
 
@@ -72,7 +73,8 @@ public class GameConfig {
 
         for (int idx = 0; idx < Constants.MAX_PLAYERS; ++idx) {
             mPlayerInputFactoryIds[idx] = mPreferences.getString(PrefConstants.INPUT_PREFIX + String.valueOf(idx), PrefConstants.INPUT_DEFAULT);
-            this.vehicles[idx] = mPreferences.getString(PrefConstants.VEHICLE_ID_PREFIX + String.valueOf(idx));
+            String str = mPreferences.getString(PrefConstants.VEHICLE_ID_PREFIX + String.valueOf(idx));
+            this.vehicles[idx] = VehicleDefId.registry.getOrNull(str);
         }
 
         this.track = mPreferences.getString(PrefConstants.TRACK_ID);
@@ -91,8 +93,9 @@ public class GameConfig {
 
         mPreferences.putString(PrefConstants.GAME_MODE, this.gameMode.toString());
         for (int idx = 0; idx < this.vehicles.length; ++idx) {
+            VehicleDefId vehicleDefId = this.vehicles[idx];
             mPreferences.putString(PrefConstants.VEHICLE_ID_PREFIX + String.valueOf(idx),
-                    this.vehicles[idx]);
+                    vehicleDefId != null ? vehicleDefId.value : "");
             mPreferences.putString(PrefConstants.INPUT_PREFIX + String.valueOf(idx),
                     mPlayerInputFactoryIds[idx]);
         }

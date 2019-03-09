@@ -22,6 +22,8 @@ import com.agateau.pixelwheels.Constants;
 import com.agateau.pixelwheels.GamePlay;
 import com.agateau.pixelwheels.GameWorld;
 import com.agateau.pixelwheels.utils.Box2DUtils;
+import com.agateau.pixelwheels.vehicledef.VehicleDef;
+import com.agateau.pixelwheels.vehicledef.VehicleDefId;
 import com.agateau.utils.AgcMathUtils;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -55,8 +57,7 @@ public class Vehicle implements Racer.Component, Disposable {
 
     private final TextureRegion mRegion;
     private final Array<WheelInfo> mWheels = new Array<WheelInfo>();
-    private String mId;
-    private String mName;
+    private VehicleDef mVehicleDef;
 
     private int mCollisionCategoryBits;
     private int mCollisionMaskBits;
@@ -148,12 +149,12 @@ public class Vehicle implements Racer.Component, Disposable {
         return mWheels;
     }
 
-    public String getId() {
-        return mId;
+    public VehicleDefId getId() {
+        return mVehicleDef.id;
     }
 
-    public void setId(String id) {
-        mId = id;
+    public void setVehicleDef(VehicleDef vehicleDef) {
+        mVehicleDef = vehicleDef;
     }
 
     public Body getBody() {
@@ -414,12 +415,8 @@ public class Vehicle implements Racer.Component, Disposable {
         return mBody.getPosition().y;
     }
 
-    public void setName(String name) {
-        mName = name;
-    }
-
     public String getName() {
-        return mName;
+        return mVehicleDef.name;
     }
 
     public float getTurboTime() {
